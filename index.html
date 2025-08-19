@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Language Learning App</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header>
+    <div>
+      <h1>LinguaMini</h1>
+      <div class="muted" style="font-size:13px">Learn words, phrases & grammar</div>
+    </div>
+
+    <div class="controls">
+      <label for="langSelect" class="muted">Language</label>
+      <select id="langSelect" aria-label="Language">
+        <!-- Filled by JS -->
+      </select>
+
+      <label class="muted">Category</label>
+      <select id="categorySelect">
+        <option value="vocab">Vocabulary</option>
+        <option value="phrases">Phrases</option>
+        <option value="grammar">Grammar</option>
+      </select>
+
+      <button id="syncBtn" class="small-btn" title="Sync (optional)">Sync</button>
+    </div>
+  </header>
+
+  <nav>
+    <div class="tab active" data-tab="home">Home</div>
+    <div class="tab" data-tab="flashcards">Flashcards</div>
+    <div class="tab" data-tab="quiz">Quiz</div>
+    <div class="tab" data-tab="library">Library</div>
+    <div class="tab" data-tab="profile">Profile</div>
+  </nav>
+
+  <main>
+    <section id="mainContent" class="card">
+      <!-- Dynamic main content -->
+      <div id="homeView">
+        <div class="stack">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div>
+              <h3 style="margin:0">Daily Lesson</h3>
+              <div class="muted" style="font-size:13px">One new item every day to learn</div>
+            </div>
+            <div class="stack" style="align-items:flex-end">
+              <div class="muted">Progress</div>
+              <div class="progress" style="width:160px"><i id="progressBar" style="width:0%"></i></div>
+            </div>
+          </div>
+
+          <div id="dailyCardWrap" style="padding:20px">
+            <!-- Flashcard placed here -->
+          </div>
+
+          <div style="display:flex;gap:8px;align-items:center;justify-content:center;margin-top:8px">
+            <button id="markKnown" class="small-btn">Mark as Known</button>
+            <button id="nextDaily" class="small-btn">Skip</button>
+            <button id="pronounceDaily" class="small-btn">Pronounce</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="flashcardsView" style="display:none">
+        <div class="stack" style="align-items:center">
+          <h3 style="margin:0">Flashcards</h3>
+          <div class="muted">Swipe or flip to practice</div>
+          <div id="flashcardArea" style="width:100%;padding-top:10px"></div>
+          <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;justify-content:center">
+            <button id="prevCard" class="small-btn">Prev</button>
+            <button id="flipCard" class="small-btn">Flip</button>
+            <button id="nextCard" class="small-btn">Next</button>
+            <button id="pronounceBtn" class="small-btn">Pronounce</button>
+            <button id="addKnown" class="small-btn">Mark Known</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="quizView" style="display:none">
+        <div class="stack">
+          <h3 style="margin:0">Quiz</h3>
+          <div class="muted">Multiple choice practice</div>
+
+          <div id="quizArea" style="padding-top:10px"></div>
+
+          <div style="display:flex;gap:8px;margin-top:12px;align-items:center;flex-wrap:wrap">
+            <label for="quizCount" class="muted">Questions</label>
+            <select id="quizCount" style="padding:8px;border-radius:8px">
+              <option>5</option>
+              <option>8</option>
+              <option>12</option>
+            </select>
+            <button id="startQuiz" class="big-btn">Start Quiz</button>
+            <div id="quizScore" class="muted" style="margin-left:auto"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="libraryView" style="display:none">
+        <h3 style="margin:0">Library</h3>
+        <div class="muted" style="margin-bottom:8px">All items, search & manage</div>
+        <input id="search" type="search" placeholder="Search..." style="width:100%;margin-bottom:8px">
+        <div id="libraryList" class="stack"></div>
+      </div>
+
+      <div id="profileView" style="display:none">
+        <h3 style="margin:0">Profile & Sync</h3>
+        <div class="muted">Local progress is saved in browser. You can optionally sync with Firebase.</div>
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+          <button id="exportBtn" class="small-btn">Export Data</button>
+          <button id="importBtn" class="small-btn">Import Data</button>
+          <button id="clearBtn" class="small-btn" title="Reset local progress">Reset Local</button>
+          <button id="firebaseSignIn" class="small-btn">Firebase: Sign In</button>
+        </div>
+        <pre id="profileDump" style="background:#0f172a;color:#fff;padding:10px;border-radius:8px;margin-top:12px;font-size:12px;max-height:220px;overflow:auto"></pre>
+      </div>
+    </section>
+
+    <aside class="card" id="sidePane">
+      <div style="display:flex;gap:8px;align-items:center;justify-content:space-between">
+        <div>
+          <div class="muted">Currently</div>
+          <div id="statusLine" style="font-weight:700">No language selected</div>
+        </div>
+        <div>
+          <div class="muted">Known</div>
+          <div id="knownCount" style="font-weight:700">0</div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <h4 style="margin:4px 0 8px 0">Categories</h4>
+        <div class="row">
+          <div class="pill" id="catVocab">Vocabulary</div>
+          <div class="pill" id="catPhrases">Phrases</div>
+          <div class="pill" id="catGrammar">Grammar</div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <h4 style="margin:4px 0 8px 0">Quick Actions</h4>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button id="dailyAgain" class="small-btn">Repeat Daily</button>
+          <button id="practiceQuiz" class="small-btn">Quick Quiz</button>
+          <button id="toggleSpeech" class="small-btn">Toggle Speech: On</button>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+  <p>
+    Language Learning App • Works offline (localStorage) • 
+    <span id="storageStatus">Data saved locally</span>
+  </p>
+</footer>
+
+<style>
+footer {
+    background: #1f2937; /* dark gray */
+    color: #f3f4f6;      /* light text */
+    padding: 12px 20px;
+    font-size: 14px;
+    text-align: center;
+    border-top: 2px solid #16a34a; /* green accent */
+}
+
+footer p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+#storageStatus {
+    color: #4ade80; /* soft green */
+    font-weight: 600;
+}
+</style>
+
+</div>
+
+<script src="main.js"></script>
+</body>
+</html>
